@@ -5,15 +5,13 @@ using UnityEngine.UI;
 
 public class SongView : MonoBehaviour
 {
-    [HideInInspector]
-    public bool isSelected;
     private Text title;
     private Text artist;
 
     // Use this for initialization
     void Start()
     {
-        var texts = GetComponents<Text>();
+        var texts = GetComponentsInChildren<Text>();
         foreach (var text in texts)
         {
             if (text.name == "Title")
@@ -23,9 +21,9 @@ public class SongView : MonoBehaviour
         }
     }
 
-    public void SetInfo()
+    public void SetInfo(string _title, string _artist)
     {
-        title.text = "Yes!";
-        artist.text = "No!";
+        title.text = _title;
+        artist.text = _artist;
     }
 }
