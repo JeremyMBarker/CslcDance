@@ -1,20 +1,13 @@
-﻿using UnityEngine;
-using System.IO;
+﻿using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-public class StepmaniaParser : MonoBehaviour
+public class StepmaniaParser
 {
-    public List<PackInfo> PackList;
-    private string songLibraryPath;
-
-    // Use this for initialization
-    void Start()
+    public List<PackInfo> LoadSongs()
     {
-        var packCount = 0;
-        var songCount = 0;
-
-        songLibraryPath = ".\\Songs\\";
+        List<PackInfo> PackList;
+        var songLibraryPath = ".\\Songs\\";
         PackList = new List<PackInfo>();
 
         // search the songs directory for packs
@@ -130,10 +123,9 @@ public class StepmaniaParser : MonoBehaviour
                     metadata = metadata.NextMatch();
                 }
                 packItem.Songs.Add(songItem);
-                songCount++;
             }
             PackList.Add(packItem);
-            packCount++;
         }
+        return PackList;
     }
 }

@@ -7,7 +7,7 @@ public class SelectionWheel : MonoBehaviour
 {
     private Text[][] SongText;
     private Text[] PackText;
-    private StepmaniaParser parser;
+    private List<PackInfo> PackList;
     private int startingIndex;
 
     // Use this for initialization
@@ -37,11 +37,11 @@ public class SelectionWheel : MonoBehaviour
         foreach (var texts in SongText)
             foreach (var text in texts)
                 text.gameObject.SetActive(false);
-        parser = GetComponent<StepmaniaParser>();
+        PackList = new StepmaniaParser().LoadSongs();
         for (var i = startingIndex; i < PackText.Length; i++)
-            PackText[i].text = parser.PackList[(i - startingIndex) % parser.PackList.Count].Name;
+            PackText[i].text = PackList[(i - startingIndex) % PackList.Count].Name;
         for (var i = 0; i < startingIndex; i++)
-            PackText[startingIndex - 1 - i].text = parser.PackList[Mathf.Abs(parser.PackList.Count - 1 - i) % parser.PackList.Count].Name;
+            PackText[startingIndex - 1 - i].text = PackList[Mathf.Abs(PackList.Count - 1 - i) % PackList.Count].Name;
     }
 	
     // Update is called once per frame

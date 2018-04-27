@@ -2406,7 +2406,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1113171490}
-  - component: {fileID: 1113171492}
   - component: {fileID: 1113171491}
   m_Layer: 5
   m_Name: SelectionWheel
@@ -2451,17 +2450,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af939b23089713f4eb2903cce2e6b3bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1113171492
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1113171489}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 504576197aca82845931c2974b8eecc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1205851107
