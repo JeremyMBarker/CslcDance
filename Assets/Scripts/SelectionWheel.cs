@@ -5,15 +5,23 @@ using UnityEngine.UI;
 
 public class SelectionWheel : MonoBehaviour
 {
+    // Text references
     private Text[][] SongText;
     private Text[] PackText;
+
+    // Complete song library
     private List<PackInfo> PackList;
-    private int startingIndex;
+
+    // selection wheel variables
+    private PackInfo selectedPack;
+    private int centerIndex;
+    private int itemIndex;
 
     // Use this for initialization
     void Start()
     {
-        startingIndex = 4; // index of center item in wheel
+        centerIndex = 4;    // index of center item in wheel
+        itemIndex = 0;      // index of item that is in the center
         // Get references to all the text components
         SongText = new Text[9][]; // [#][0] = title, [#][1] = artist
         PackText = new Text[9];
@@ -32,20 +40,76 @@ public class SelectionWheel : MonoBehaviour
                     PackText[item.Index] = text;
             }
         }
-
-        // Initially, show the song packs
-        foreach (var texts in SongText)
-            foreach (var text in texts)
-                text.gameObject.SetActive(false);
+        UpdateItemViews();
         PackList = new StepmaniaParser().LoadSongs();
-        for (var i = startingIndex; i < PackText.Length; i++)
-            PackText[i].text = PackList[(i - startingIndex) % PackList.Count].Name;
-        for (var i = 0; i < startingIndex; i++)
-            PackText[startingIndex - 1 - i].text = PackList[Mathf.Abs(PackList.Count - 1 - i) % PackList.Count].Name;
+        UpdateItemTexts(0);
     }
-	
+
     // Update is called once per frame
     void Update()
     {
+        // Selecting Something
+        if (Input.GetButtonDown("Submit"))
+        {
+            // select song
+            if (selectedPack != null)
+            {
+
+            }
+            // select pack
+            else
+            {
+                selectedPack = PackList[centerIndex];
+                UpdateItemViews();
+            }
+        }
+
+        // Canceling or going back
+        if (Input.GetButtonDown("Cancel"))
+        {
+        }
+
+        // Scroll Up
+        if (Input.GetButtonDown("Up"))
+            UpdateItemTexts(1);
+
+        // Scroll Down
+        if (Input.GetButtonDown("Down"))
+            UpdateItemTexts(-1);
+    }
+
+    /// <summary>
+    /// Updates the item views by hiding/showing song/pack texts
+    /// </summary>
+    private void UpdateItemViews()
+    {
+        foreach (var texts in SongText)
+            foreach (var text in texts)
+                text.gameObject.SetActive(selectedPack != null);   
+        foreach (var text in PackText)
+            text.gameObject.SetActive(selectedPack == null);
+    }
+
+    /// <summary>
+    /// Updates the text within item views.
+    /// </summary>
+    /// <param name="amount">Amount.</param>
+    private void UpdateItemTexts(int amount)
+    {
+        // Update pack names
+        if (selectedPack == null)
+        {
+            // update item index
+            if (itemIndex + amount < 0)
+                itemIndex = PackList.Count - itemIndex + amount;
+            else
+                itemIndex = (itemIndex + amount) % PackList.Count;
+            for (var i = 0; i < PackText.Length; i++)
+                PackText[i].text = PackList[(int)Mathf.Repeat(PackList.Count - centerIndex + i + itemIndex, PackList.Count)].Name;
+        }
+        // Update song titles, artist
+        else
+        {
+        }
     }
 }
