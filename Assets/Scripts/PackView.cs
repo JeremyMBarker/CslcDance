@@ -5,17 +5,16 @@ using UnityEngine.UI;
 
 public class PackView : MonoBehaviour
 {
-    private Text text;
-    private string packName;
+    private Text packName;
 
     // Use this for initialization
     void Start()
     {
-        text = GetComponent<Text>();
+        packName = GetComponent<Text>();
     }
 
     public void SetInfo(string _packName)
     {
-        packName = _packName;
+        packName.text = _packName;
     }
 }

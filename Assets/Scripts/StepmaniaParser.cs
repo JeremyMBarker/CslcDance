@@ -11,6 +11,9 @@ public class StepmaniaParser : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        var packCount = 0;
+        var songCount = 0;
+
         songLibraryPath = ".\\Songs\\";
         PackList = new List<PackInfo>();
 
@@ -126,8 +129,13 @@ public class StepmaniaParser : MonoBehaviour
                     }
                     metadata = metadata.NextMatch();
                 }
+                packItem.Songs.Add(songItem);
+                songCount++;
             }
             PackList.Add(packItem);
+            packCount++;
         }
+        Debug.Log("Loaded " + packCount + " song packs");
+        Debug.Log("Loaded " + songCount + " songs");
     }
 }
