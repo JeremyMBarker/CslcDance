@@ -135,7 +135,5 @@ public class StepmaniaParser : MonoBehaviour
             PackList.Add(packItem);
             packCount++;
         }
-        Debug.Log("Loaded " + packCount + " song packs");
-        Debug.Log("Loaded " + songCount + " songs");
     }
 }
