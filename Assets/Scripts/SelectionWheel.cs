@@ -46,7 +46,7 @@ public class SelectionWheel : MonoBehaviour
         }
         UpdateItemViews();
         PackList = new StepmaniaParser().LoadSongs();
-        UpdateItemTexts();
+        UpdateItemInfo();
     }
 
     // Update is called once per frame
@@ -66,7 +66,7 @@ public class SelectionWheel : MonoBehaviour
                 selectedPack = PackList[itemIndex];
                 UpdateItemViews();
                 itemIndex = 0;
-                UpdateItemTexts();
+                UpdateItemInfo();
             }
         }
 
@@ -79,7 +79,7 @@ public class SelectionWheel : MonoBehaviour
                 itemIndex = PackList.IndexOf(selectedPack); // set to the previous index
                 selectedPack = null;
                 UpdateItemViews();
-                UpdateItemTexts();
+                UpdateItemInfo();
             }
             // select pack
             else
@@ -89,11 +89,25 @@ public class SelectionWheel : MonoBehaviour
 
         // Scroll Up
         if (Input.GetButtonDown("Up"))
-            UpdateItemTexts(1);
+            UpdateItemInfo(1);
 
         // Scroll Down
         if (Input.GetButtonDown("Down"))
-            UpdateItemTexts(-1);
+            UpdateItemInfo(-1);
+
+        // Sample song music
+        if (Input.GetButtonDown("Sample"))
+        {
+            if (selectedPack != null)
+            {
+                var s = selectedPack.Songs[itemIndex];
+                float _sampleStart, _sampleLength;
+                var success = float.TryParse(s.SampleStart, out _sampleStart);
+                success = success & float.TryParse(s.SampleLength, out _sampleLength);
+                if (success)
+                    SampleSong(s.Path + '\\' + s.Music, _sampleStart, _sampleLength);
+            }            
+        }
     }
 
     /// <summary>
@@ -109,11 +123,11 @@ public class SelectionWheel : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the item texts.
+    /// Updates the item texts and banner image.
     /// Can specify how much to increment the item index.
     /// </summary>
     /// <param name="indexInc">Index increment amount.</param>
-    private void UpdateItemTexts(int indexInc = 0)
+    private void UpdateItemInfo(int indexInc = 0)
     {
         // Update pack names
         if (selectedPack == null)
@@ -140,22 +154,37 @@ public class SelectionWheel : MonoBehaviour
                 SongText[i][0].text = song.Title;
                 SongText[i][1].text = song.Artist;
             }
-            UpdateBanner(selectedPack.Songs[itemIndex].Path + '\\' + selectedPack.Songs[itemIndex].Banner);
+            var bannerPath = selectedPack.Songs[itemIndex].Path + '\\' + selectedPack.Songs[itemIndex].Banner;
+            Texture2D tex = null;
+            if (File.Exists(bannerPath))
+            {
+                tex = new Texture2D(2, 2);
+                tex.LoadImage(File.ReadAllBytes(bannerPath));
+            }
+            Banner.texture = tex;
         }
     }
 
     /// <summary>
-    /// Updates the banner.
+    /// Samples the song.
     /// </summary>
-    /// <param name="imagePath">Image path.</param>
-    private void UpdateBanner(string imagePath)
+    /// <param name="songPath">Song path.</param>
+    /// <param name="startPoint">Start point.</param>
+    /// <param name="duration">Duration.</param>
+    private void SampleSong(string songPath, float startPoint, float duration)
     {
-        Texture2D tex = null;
-        if (File.Exists(imagePath))
+
+        var path = Directory.GetCurrentDirectory() + songPath.Trim('.');
+        if (File.Exists(songPath))
         {
-            tex = new Texture2D(2, 2);
-            tex.LoadImage(File.ReadAllBytes(imagePath));
+            var source = GetComponent<AudioSource>();
+            var audioloader = new WWW(path);
+            var clip = audioloader.GetAudioClip(false);
+            // Busy waiting is bad. This should definitely be fixed
+            while (clip.loadState != AudioDataLoadState.Loaded)
+                ;
+            source.clip = clip;
+            source.Play();
         }
-        Banner.texture = tex;
     }
 }
