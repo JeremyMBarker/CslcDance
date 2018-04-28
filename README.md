@@ -8,6 +8,7 @@ Notes On Adding Songs:
 * Make sure to add song packs.
   * I haven't made anything to handle 'stray' songs, so for now individual songs can be put in 'Non-pack' directory
     * This really shouldn't be a problem to implement, but it would require work in the UI (which doesn't exist yet)
+* Right now the game is only compatible with .OGG and .WAV audio, so don't try adding .MP3s to the library.
 
 Helpful Links:
 * Simple Stepmania Unity Tutorial: http://blog.phantombadger.com/2016/05/23/how-to-create-unity-rhythm-game-part-1-parsing-the-sm-file/
