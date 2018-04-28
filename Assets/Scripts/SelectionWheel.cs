@@ -21,9 +21,13 @@ public class SelectionWheel : MonoBehaviour
     private int centerIndex;
     private int itemIndex;
 
+    private SongSampler sampler;
+
     // Use this for initialization
     void Start()
     {
+        sampler = GetComponent<SongSampler>();
+
         centerIndex = 4;    // index of center item in wheel
         itemIndex = 0;      // index of item that is in the center
         // Get references to all the text components
@@ -96,18 +100,8 @@ public class SelectionWheel : MonoBehaviour
             UpdateItemInfo(-1);
 
         // Sample song music
-        if (Input.GetButtonDown("Sample"))
-        {
-            if (selectedPack != null)
-            {
-                var s = selectedPack.Songs[itemIndex];
-                float _sampleStart, _sampleLength;
-                var success = float.TryParse(s.SampleStart, out _sampleStart);
-                success = success & float.TryParse(s.SampleLength, out _sampleLength);
-                if (success)
-                    SampleSong(s.Path + '\\' + s.Music, _sampleStart, _sampleLength);
-            }            
-        }
+        if (Input.GetButtonDown("Sample") && selectedPack != null)
+            sampler.SampleSong(selectedPack.Songs[itemIndex]);
     }
 
     /// <summary>
@@ -162,29 +156,6 @@ public class SelectionWheel : MonoBehaviour
                 tex.LoadImage(File.ReadAllBytes(bannerPath));
             }
             Banner.texture = tex;
-        }
-    }
-
-    /// <summary>
-    /// Samples the song.
-    /// </summary>
-    /// <param name="songPath">Song path.</param>
-    /// <param name="startPoint">Start point.</param>
-    /// <param name="duration">Duration.</param>
-    private void SampleSong(string songPath, float startPoint, float duration)
-    {
-
-        var path = Directory.GetCurrentDirectory() + songPath.Trim('.');
-        if (File.Exists(songPath))
-        {
-            var source = GetComponent<AudioSource>();
-            var audioloader = new WWW(path);
-            var clip = audioloader.GetAudioClip(false);
-            // Busy waiting is bad. This should definitely be fixed
-            while (clip.loadState != AudioDataLoadState.Loaded)
-                ;
-            source.clip = clip;
-            source.Play();
         }
     }
 }

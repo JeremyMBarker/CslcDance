@@ -20,12 +20,13 @@ public class StepmaniaParser
                 var files = Directory.GetFiles(song, "*.sm");
                 if (files.Length == 0)   // if no stepmania file
                     continue;
-
+                    
                 // Get the data from the file
                 var stepmania = File.ReadAllText(files[0]).Trim();
                 var metadata = new Regex("#.*?;", RegexOptions.Singleline).Match(stepmania);
 
                 // Add the song to the pack
+                var isSongValid = true; // check for validity in the metadata
                 var songItem = new SongInfo(song);
                 while (metadata.Success)
                 {
@@ -85,6 +86,7 @@ public class StepmaniaParser
                             songItem.CDTitle = value;
                             break;
                         case "MUSIC":
+                            isSongValid = value.EndsWith(".ogg");
                             songItem.Music = value;
                             break;
                         case "OFFSET":
@@ -122,9 +124,11 @@ public class StepmaniaParser
                     }
                     metadata = metadata.NextMatch();
                 }
-                packItem.Songs.Add(songItem);
+                if (isSongValid)
+                    packItem.Songs.Add(songItem);
             }
-            PackList.Add(packItem);
+            if (packItem.Songs.Count != 0)
+                PackList.Add(packItem);
         }
         return PackList;
     }
