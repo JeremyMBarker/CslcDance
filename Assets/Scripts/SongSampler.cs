@@ -61,7 +61,7 @@ public class SongSampler : MonoBehaviour
             var audioloader = new WWW(Directory.GetCurrentDirectory() + songPath.Trim('.'));
             // streaming the clip is faster, but throws empty errors (just ignore)
             // the errors are supposedly caused by by failure to read a file
-            var clip = audioloader.GetAudioClip(false, true, AudioType.OGGVORBIS);
+            var clip = audioloader.GetAudioClip(false, true);
             startTime = _sampleStart;
             maxTime = _sampleLength;
             source.clip = clip;

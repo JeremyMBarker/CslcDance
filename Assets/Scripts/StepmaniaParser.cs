@@ -86,7 +86,7 @@ public class StepmaniaParser
                             songItem.CDTitle = value;
                             break;
                         case "MUSIC":
-                            isSongValid = value.EndsWith(".ogg");
+                            isSongValid = value.EndsWith(".ogg") || value.EndsWith(".wav");
                             songItem.Music = value;
                             break;
                         case "OFFSET":
