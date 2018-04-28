@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
+using System.Threading;
 
 public class SelectionWheel : MonoBehaviour
 {
+    public RawImage Banner;
+
     // Text references
     private Text[][] SongText;
     private Text[] PackText;
@@ -42,7 +46,7 @@ public class SelectionWheel : MonoBehaviour
         }
         UpdateItemViews();
         PackList = new StepmaniaParser().LoadSongs();
-        UpdateItemTexts(0);
+        UpdateItemTexts();
     }
 
     // Update is called once per frame
@@ -59,14 +63,28 @@ public class SelectionWheel : MonoBehaviour
             // select pack
             else
             {
-                selectedPack = PackList[centerIndex];
+                selectedPack = PackList[itemIndex];
                 UpdateItemViews();
+                itemIndex = 0;
+                UpdateItemTexts();
             }
         }
 
         // Canceling or going back
         if (Input.GetButtonDown("Cancel"))
         {
+            // select song
+            if (selectedPack != null)
+            {
+                itemIndex = PackList.IndexOf(selectedPack); // set to the previous index
+                selectedPack = null;
+                UpdateItemViews();
+                UpdateItemTexts();
+            }
+            // select pack
+            else
+            {
+            }
         }
 
         // Scroll Up
@@ -91,25 +109,53 @@ public class SelectionWheel : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the text within item views.
+    /// Updates the item texts.
+    /// Can specify how much to increment the item index.
     /// </summary>
-    /// <param name="amount">Amount.</param>
-    private void UpdateItemTexts(int amount)
+    /// <param name="indexInc">Index increment amount.</param>
+    private void UpdateItemTexts(int indexInc = 0)
     {
         // Update pack names
         if (selectedPack == null)
         {
             // update item index
-            if (itemIndex + amount < 0)
-                itemIndex = PackList.Count - itemIndex + amount;
+            if (itemIndex + indexInc < 0)
+                itemIndex = PackList.Count - itemIndex + indexInc;
             else
-                itemIndex = (itemIndex + amount) % PackList.Count;
+                itemIndex = (itemIndex + indexInc) % PackList.Count;
             for (var i = 0; i < PackText.Length; i++)
                 PackText[i].text = PackList[(int)Mathf.Repeat(PackList.Count - centerIndex + i + itemIndex, PackList.Count)].Name;
         }
         // Update song titles, artist
         else
         {
+            // update item index
+            if (itemIndex + indexInc < 0)
+                itemIndex = selectedPack.Songs.Count - itemIndex + indexInc;
+            else
+                itemIndex = (itemIndex + indexInc) % selectedPack.Songs.Count;
+            for (var i = 0; i < SongText.Length; i++)
+            {
+                var song = selectedPack.Songs[(int)Mathf.Repeat(selectedPack.Songs.Count - centerIndex + i + itemIndex, selectedPack.Songs.Count)];
+                SongText[i][0].text = song.Title;
+                SongText[i][1].text = song.Artist;
+            }
+            UpdateBanner(selectedPack.Songs[itemIndex].Path + '\\' + selectedPack.Songs[itemIndex].Banner);
         }
+    }
+
+    /// <summary>
+    /// Updates the banner.
+    /// </summary>
+    /// <param name="imagePath">Image path.</param>
+    private void UpdateBanner(string imagePath)
+    {
+        Texture2D tex = null;
+        if (File.Exists(imagePath))
+        {
+            tex = new Texture2D(2, 2);
+            tex.LoadImage(File.ReadAllBytes(imagePath));
+        }
+        Banner.texture = tex;
     }
 }
